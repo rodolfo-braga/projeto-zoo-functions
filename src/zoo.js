@@ -4,8 +4,9 @@ function getSpeciesByIds(...ids) {
   return data.species.filter((specie) => ids.some((id) => id === specie.id));
 }
 
-function getAnimalsOlderThan(animal, age) {
-  // seu código aqui
+function getAnimalsOlderThan(animal, minimumAge) {
+  return data.species.find(({ name }) => name === animal)
+    .residents.every(({ age }) => age >= minimumAge);
 }
 
 function getEmployeeByName(employeeName) {
