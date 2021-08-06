@@ -50,35 +50,44 @@ function calculateEntry({ Adult = 0, Child = 0, Senior = 0 } = {}) {
   return Adult * adultEntry + Child * childEntry + Senior * seniorEntry;
 }
 
-function getAnimalMap(options) {
+function getSpeciesByRegion() {
+  return data.species.reduce((acc, currentSpecie) => {
+    const { name, location } = currentSpecie;
+    if (!acc[location]) {
+      acc[location] = [];
+    }
+    acc[location].push(name);
+    return acc;
+  }, {});
+}
+
+const getResidents = (residents) => residents.map((resident) => resident.name);
+
+function getAnimalsNames(options) {
   return data.species.reduce((acc, currentSpecie) => {
     const { name, location, residents } = currentSpecie;
     if (!acc[location]) {
       acc[location] = [];
     }
-    if (options !== undefined && options.includeNames === true && options.sex && options.sorted === true) {
-      const specieGroup = { [name]: residents.filter(({ sex }) => sex === options.sex).map((resident) => resident.name).sort() };
-      acc[location].push(specieGroup);
-      return acc;
+    let animalsNames = getResidents(residents);
+
+    if (options.sex) {
+      const residentsFiltered = residents.filter((resident) => resident.sex === options.sex);
+      animalsNames = getResidents(residentsFiltered);
     }
-    if (options !== undefined && options.includeNames === true && options.sex) {
-      const specieGroup = { [name]: residents.filter(({ sex }) => sex === options.sex).map((resident) => resident.name) };
-      acc[location].push(specieGroup);
-      return acc;
-    }
-    if (options !== undefined && options.includeNames === true && options.sorted === true) {
-      const specieGroup = { [name]: residents.map((resident) => resident.name).sort() };
-      acc[location].push(specieGroup);
-      return acc;
-    }
-    if (options !== undefined && options.includeNames === true) {
-      const specieGroup = { [name]: residents.map((resident) => resident.name) };
-      acc[location].push(specieGroup);
-      return acc;
-    }
-    acc[location].push(name);
+
+    if (options.sorted) animalsNames.sort();
+
+    const specieGroup = { [name]: animalsNames };
+    acc[location].push(specieGroup);
     return acc;
   }, {});
+}
+
+function getAnimalMap(options) {
+  if (!options) return getSpeciesByRegion();
+  if (options.includeNames === true) return getAnimalsNames(options);
+  return getSpeciesByRegion();
 }
 
 function getSchedule(dayName) {
