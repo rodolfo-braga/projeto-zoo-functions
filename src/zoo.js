@@ -51,7 +51,34 @@ function calculateEntry({ Adult = 0, Child = 0, Senior = 0 } = {}) {
 }
 
 function getAnimalMap(options) {
-  // seu código aqui
+  return data.species.reduce((acc, currentSpecie) => {
+    const { name, location, residents } = currentSpecie;
+    if (!acc[location]) {
+      acc[location] = [];
+    }
+    if (options !== undefined && options.includeNames === true && options.sex && options.sorted === true) {
+      const specieGroup = { [name]: residents.filter(({ sex }) => sex === options.sex).map((resident) => resident.name).sort() };
+      acc[location].push(specieGroup);
+      return acc;
+    }
+    if (options !== undefined && options.includeNames === true && options.sex) {
+      const specieGroup = { [name]: residents.filter(({ sex }) => sex === options.sex).map((resident) => resident.name) };
+      acc[location].push(specieGroup);
+      return acc;
+    }
+    if (options !== undefined && options.includeNames === true && options.sorted === true) {
+      const specieGroup = { [name]: residents.map((resident) => resident.name).sort() };
+      acc[location].push(specieGroup);
+      return acc;
+    }
+    if (options !== undefined && options.includeNames === true) {
+      const specieGroup = { [name]: residents.map((resident) => resident.name) };
+      acc[location].push(specieGroup);
+      return acc;
+    }
+    acc[location].push(name);
+    return acc;
+  }, {});
 }
 
 function getSchedule(dayName) {
