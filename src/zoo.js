@@ -20,7 +20,10 @@ function createEmployee(personalInfo, associatedWith) {
 }
 
 function isManager(id) {
-  return data.employees.some(({ managers }) => managers.some((managerId) => managerId === id));
+  const isEmployeeManagedByThisId = (employee) =>
+    employee.managers.some((managerId) => managerId === id);
+
+  return data.employees.some((employee) => isEmployeeManagedByThisId(employee));
 }
 
 function addEmployee(id, firstName, lastName, managers = [], responsibleFor = []) {
